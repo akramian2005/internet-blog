@@ -5,7 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 // use App\Http\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\Authenticate;
-// use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\AdminMiddleware;
 
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth' => Authenticate::class,
             // 'admin' => IsAdmin::class,
+            'admin' => AdminMiddleware::class,
+
             
         ]);
     })

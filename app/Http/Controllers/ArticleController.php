@@ -3,36 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-
 class ArticleController extends Controller
 {
-    // public function index() {
-    //     $articles = Article::with('user')->latest()->get();
-    //     return view('index', compact('articles'));
-    // }
-
-    public function show($id) {
-        $article = Article::with('user')->findOrFail($id);
+    // Просмотр статьи
+    public function show($id)
+    {
+        $article = Article::with(['user', 'category'])->findOrFail($id);
         return view('articles.show', compact('article'));
     }
 
-    public function create() {
-        return view('articles.create');
+    // Форма создания
+    public function create()
+    {
+        $categories = Category::all();
+        return view('articles.create', compact('categories'));
     }
 
-    public function store(Request $request) {
+
+    // Сохранение новой статьи
+    public function store(Request $request)
+    {
         $request->validate([
-            'title'   => 'required|max:255',
-            'content' => 'required',
-            'image'   => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'title'       => 'required|max:255',
+            'content'     => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-        $data = $request->only(['title', 'content']);
-        $data['user_id'] = Auth::id(); // ← сохраняем автора
+        $data = $request->only(['title', 'content', 'category_id']);
+        $data['user_id'] = Auth::id(); // автор
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('articles', 'public');
@@ -43,17 +47,17 @@ class ArticleController extends Controller
         return redirect()->route('index')->with('success', 'Статья добавлена!');
     }
 
-        // Редактирование
+    // Форма редактирования
     public function edit($id)
     {
         $article = Article::findOrFail($id);
 
-        // Только автор может редактировать
         if (auth()->id() !== $article->user_id) {
             abort(403);
         }
 
-        return view('articles.edit', compact('article'));
+        $categories = Category::all();
+        return view('articles.edit', compact('article', 'categories'));
     }
 
     // Обновление
@@ -66,15 +70,15 @@ class ArticleController extends Controller
         }
 
         $request->validate([
-            'title' => 'required|max:255',
-            'content' => 'required',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'title'       => 'required|max:255',
+            'content'     => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-        $data = $request->only(['title', 'content']);
+        $data = $request->only(['title', 'content', 'category_id']);
 
         if ($request->hasFile('image')) {
-            // удаляем старую картинку если была
             if ($article->image) {
                 Storage::disk('public')->delete($article->image);
             }
@@ -95,7 +99,6 @@ class ArticleController extends Controller
             abort(403);
         }
 
-        // удалить картинку
         if ($article->image) {
             Storage::disk('public')->delete($article->image);
         }
@@ -104,7 +107,4 @@ class ArticleController extends Controller
 
         return redirect()->route('index')->with('success', 'Статья удалена!');
     }
-
 }
-
-
