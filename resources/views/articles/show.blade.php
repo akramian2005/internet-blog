@@ -20,6 +20,16 @@
             Категория: <strong>{{ optional($article->category)->name }}</strong>
         </p>
         <p>{{ $article->content }}</p>
+
+        <!-- Лайки -->
+        @auth
+        <form action="{{ route('articles.like', $article->id) }}" method="POST" class="mb-3">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger">
+                ❤️ Лайки ({{ $article->likes_count }})
+            </button>
+        </form>
+        @endauth
     </div>
 </div>
 
@@ -34,5 +44,33 @@
         </form>
     @endif
 @endauth
+
+<!-- Комментарии -->
+<div class="card mt-4">
+    <div class="card-body">
+        <h4>Комментарии ({{ $article->comments->count() }})</h4>
+
+        @foreach($article->comments as $comment)
+            <div class="mb-3 border-bottom pb-2">
+                <strong>{{ $comment->user->name }}:</strong>
+                <p>{{ $comment->content }}</p>
+                <small class="text-muted">{{ $comment->created_at->format('d.m.Y H:i') }}</small>
+            </div>
+        @endforeach
+
+        <!-- Форма добавления комментария -->
+        @auth
+        <form action="{{ route('comments.store', $article->id) }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <textarea name="content" class="form-control" rows="3" placeholder="Оставьте комментарий" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Отправить</button>
+        </form>
+        @else
+        <p class="text-muted">Чтобы оставить комментарий, <a href="{{ route('login.show') }}">войдите в систему</a>.</p>
+        @endauth
+    </div>
+</div>
 
 @endsection

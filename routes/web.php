@@ -56,3 +56,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 // Просмотр одной категории — доступно всем
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
+
+use App\Http\Controllers\CommentController;
+
+Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/articles/{article}/like', [ArticleController::class, 'like'])->name('articles.like');
+    Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+});
