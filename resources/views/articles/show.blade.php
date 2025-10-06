@@ -22,14 +22,22 @@
         <p>{{ $article->content }}</p>
 
         <!-- Лайки -->
-        @auth
-        <form action="{{ route('articles.like', $article->id) }}" method="POST" class="mb-3">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger">
-                ❤️ Лайки ({{ $article->likes_count }})
-            </button>
-        </form>
-        @endauth
+        <div class="mb-3">
+            @auth
+                <form action="{{ route('articles.like', $article->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger">
+                        ❤️ Лайки ({{ $article->likes_count }})
+                    </button>
+                </form>
+            @else
+                <button type="button" class="btn btn-outline-danger" disabled>
+                    ❤️ Лайки ({{ $article->likes_count }})
+                </button>
+                <small class="text-muted ms-2">Войдите, чтобы поставить лайк</small>
+            @endauth
+        </div>
+
     </div>
 </div>
 
