@@ -3,7 +3,22 @@
 @section('title', $article->title)
 
 @section('content')
-<a href="{{ route('index') }}" class="btn btn-secondary mt-3">Назад к списку</a>
+<div class="d-flex align-items-center gap-2 mt-3">
+    <a href="{{ route('index') }}" class="btn btn-secondary">Назад к списку</a>
+
+    @auth
+        @if(auth()->id() === $article->user_id)
+            <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-primary">Редактировать</a>
+
+            <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        @endif
+    @endauth
+</div>
+
 
 <div class="card mb-3">
     @if($article->image)
@@ -41,30 +56,12 @@
     </div>
 </div>
 
-@auth
-    @if(auth()->id() === $article->user_id)
-        <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-primary">Редактировать</a>
 
-        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger">Удалить</button>
-        </form>
-    @endif
-@endauth
 
 <!-- Комментарии -->
 <div class="card mt-4">
     <div class="card-body">
         <h4>Комментарии ({{ $article->comments->count() }})</h4>
-
-        @foreach($article->comments as $comment)
-            <div class="mb-3 border-bottom pb-2">
-                <strong>{{ $comment->user->name }}:</strong>
-                <p>{{ $comment->content }}</p>
-                <small class="text-muted">{{ $comment->created_at->format('d.m.Y H:i') }}</small>
-            </div>
-        @endforeach
 
         <!-- Форма добавления комментария -->
         @auth
@@ -76,9 +73,70 @@
             <button type="submit" class="btn btn-success">Отправить</button>
         </form>
         @else
-        <p class="text-muted">Чтобы оставить комментарий, <a href="{{ route('login.show') }}">войдите в систему</a>.</p>
+        <p class="text-muted">
+            Чтобы оставить комментарий, <a href="{{ route('login.show') }}">войдите в систему</a>.
+        </p>
         @endauth
+
+        <hr>
+
+        <!-- Вывод комментариев -->
+        @foreach($article->comments as $comment)
+            <div class="mb-3 border-bottom pb-2">
+                <strong>{{ $comment->user->name }}:</strong>
+
+                <!-- Текст комментария -->
+                <div id="comment-text-{{ $comment->id }}">
+                    <p>{!! nl2br(e($comment->content)) !!}</p>
+                </div>
+
+                <!-- Форма редактирования (скрыта по умолчанию) -->
+                <form action="{{ route('comments.update', $comment->id) }}" method="POST"
+                      class="d-none" id="edit-form-{{ $comment->id }}">
+                    @csrf
+                    @method('PUT')
+                    <textarea name="content" class="form-control mb-2" rows="3" required>{{ $comment->content }}</textarea>
+                    <button type="submit" class="btn btn-sm btn-success">💾 Сохранить</button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="cancelEdit({{ $comment->id }})">Отмена</button>
+                </form>
+
+                <small class="text-muted">{{ $comment->created_at->format('d.m.Y H:i') }}</small>
+
+                @auth
+                    @if(auth()->id() === $comment->user_id)
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="editComment({{ $comment->id }})">
+                                ✏️ Редактировать
+                            </button>
+
+                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Удалить комментарий?')">
+                                    🗑️ Удалить
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                @endauth
+            </div>
+        @endforeach
     </div>
 </div>
 
+<!-- Скрипт для показа/скрытия формы редактирования -->
+<script>
+function editComment(id) {
+    document.getElementById('comment-text-' + id).classList.add('d-none');
+    document.getElementById('edit-form-' + id).classList.remove('d-none');
+}
+
+function cancelEdit(id) {
+    document.getElementById('comment-text-' + id).classList.remove('d-none');
+    document.getElementById('edit-form-' + id).classList.add('d-none');
+}
+</script>
 @endsection
+
+

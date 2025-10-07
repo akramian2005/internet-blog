@@ -59,9 +59,21 @@ Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categ
 
 use App\Http\Controllers\CommentController;
 
+// Просмотр статьи
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 
+// Защищённые маршруты (только для авторизованных)
 Route::middleware('auth')->group(function () {
+    // Лайки
     Route::post('/articles/{article}/like', [ArticleController::class, 'like'])->name('articles.like');
+
+    // Комментарии
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+
+    // 🔹 Новый: редактирование комментариев
+    Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->name('comments.edit');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+
+    // 🔹 Новый: удаление комментариев
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });

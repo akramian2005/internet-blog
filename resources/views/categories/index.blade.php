@@ -5,6 +5,8 @@
 @section('content')
 <h2>Все категории</h2>
 
+<a href="{{ route('index') }}" class="btn btn-secondary mb-3">Назад на главную</a>
+
 <a href="{{ route('categories.create') }}" class="btn btn-success mb-3">Создать категорию</a>
 
 <ul class="list-group">

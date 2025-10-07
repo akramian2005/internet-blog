@@ -25,4 +25,42 @@ class CommentController extends Controller
 
         return redirect()->back()->with('success', 'Комментарий добавлен!');
     }
+
+    public function edit(Comment $comment)
+    {
+        // Проверка прав
+        if (Auth::id() !== $comment->user_id) {
+            abort(403);
+        }
+
+        return view('comments.edit', compact('comment'));
+    }
+
+    public function update(Request $request, Comment $comment)
+    {
+        if (Auth::id() !== $comment->user_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'content' => 'required|max:1000'
+        ]);
+
+        $comment->update([
+            'content' => $request->content
+        ]);
+
+        return redirect()->back()->with('success', 'Комментарий обновлён!');
+    }
+
+    public function destroy(Comment $comment)
+    {
+        if (Auth::id() !== $comment->user_id) {
+            abort(403);
+        }
+
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Комментарий удалён!');
+    }
 }
