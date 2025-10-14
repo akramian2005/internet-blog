@@ -7,7 +7,7 @@
     <a href="{{ route('index') }}" class="btn btn-secondary">Назад к списку</a>
 
     @auth
-        @if(auth()->id() === $article->user_id)
+        @if(auth()->id() === $article->user_id || auth()->user()->is_admin)
             <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-primary">Редактировать</a>
 
             <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline">

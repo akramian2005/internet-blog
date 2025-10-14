@@ -28,7 +28,6 @@ class ArticleController extends Controller
             'title' => 'required|max:255',
             'content' => 'required',
             'category_id' => 'nullable|exists:categories,id',
-            // 'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
@@ -44,12 +43,11 @@ class ArticleController extends Controller
         return redirect()->route('index')->with('success', 'Статья добавлена!');
     }
 
-    // Форма редактирования
     public function edit($id)
     {
         $article = Article::findOrFail($id);
 
-        if (auth()->id() !== $article->user_id) {
+        if (auth()->id() !== $article->user_id && !auth()->user()->is_admin) {
             abort(403);
         }
 
@@ -57,12 +55,11 @@ class ArticleController extends Controller
         return view('articles.edit', compact('article', 'categories'));
     }
 
-    // Обновление
     public function update(Request $request, $id)
     {
         $article = Article::findOrFail($id);
 
-        if (auth()->id() !== $article->user_id) {
+        if (auth()->id() !== $article->user_id && !auth()->user()->is_admin) {
             abort(403);
         }
 
@@ -87,12 +84,11 @@ class ArticleController extends Controller
         return redirect()->route('articles.show', $article->id)->with('success', 'Статья обновлена!');
     }
 
-    // Удаление
     public function destroy($id)
     {
         $article = Article::findOrFail($id);
 
-        if (auth()->id() !== $article->user_id) {
+        if (auth()->id() !== $article->user_id && !auth()->user()->is_admin)  {
             abort(403);
         }
 

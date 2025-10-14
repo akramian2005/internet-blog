@@ -28,7 +28,6 @@ class CommentController extends Controller
 
     public function edit(Comment $comment)
     {
-        // Проверка прав
         if (Auth::id() !== $comment->user_id) {
             abort(403);
         }

@@ -24,6 +24,10 @@
     @endforelse
 </div>
 
+<div class="d-flex justify-content-center mt-4">
+    {{ $articles->links() }}
+</div>
+
 <style>
 .article-img {
     height: {{ $imgHeight ?? 300 }}px;

@@ -7,7 +7,8 @@ use App\Models\Article;
 class MainController extends Controller
 {
     public function index() {
-        $articles = Article::latest()->take(6)->get(); // последние статьи
+        $articles = Article::latest()->paginate(6); 
         return view('index', compact('articles'));
     }
 }
+
