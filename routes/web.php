@@ -54,3 +54,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/profile', [UserController::class, 'update'])->name('users.update');
 });
+
+use App\Http\Controllers\FollowController;
+
+Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])
+    ->middleware('auth')
+    ->name('users.follow');
+    
+
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');

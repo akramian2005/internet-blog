@@ -31,7 +31,10 @@
     <div class="card-body">
         <h2>{{ $article->title }}</h2>
         <p class="text-muted">
-            Автор: {{ $article->user->name }} |
+           Автор: <a href="{{ route('users.show', $article->user) }}">
+                {{ $article->user->name }}
+            </a> |
+
             Категория: <strong>{{ optional($article->category)->name }}</strong>
         </p>
         <p>{{ $article->content }}</p>

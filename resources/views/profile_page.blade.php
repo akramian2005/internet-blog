@@ -53,7 +53,25 @@
 
                         <button type="submit" class="btn btn-primary btn-sm w-100">Сохранить</button>
                     </form>
+                
                 @endif
+                
+
+                @if(auth()->check() && auth()->id() !== $user->id)
+                    <form action="{{ route('users.follow', $user) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            {{ auth()->user()->isFollowing($user) ? 'Отписаться' : 'Подписаться' }}
+                        </button>
+                    </form>
+                @endif
+
+                <p class="mt-2">
+                <strong>Подписчики:</strong> {{ $user->followers()->count() }} <br>
+                <strong>Подписки:</strong> {{ $user->following()->count() }}
+                </p>
+
+
             </div>
         </div>
     </div>
