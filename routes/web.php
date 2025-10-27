@@ -43,3 +43,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
 });
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
+
+use App\Http\Controllers\UserController;
+
+// Просмотр профиля
+Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
+
+// Редактирование профиля (только для авторизованного пользователя)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/profile', [UserController::class, 'update'])->name('users.update');
+});

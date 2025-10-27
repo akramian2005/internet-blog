@@ -39,6 +39,12 @@
               <button type="submit" class="btn btn-danger mb-3">Выйти</button>
             </form>
           </li>
+          <li class="nav-item">
+                <a class="nav-link btn btn-info text-white ms-2" 
+                  href="{{ route('users.show', auth()->user()->id) }}">
+                    Профиль
+                </a>
+            </li>
         @endauth
 
         {{-- Гость --}}

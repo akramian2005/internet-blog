@@ -1,0 +1,9 @@
+        /* Основной flex-контейнер */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* занимает весь экран */
+        }
+        main {
+            flex: 1; /* основной контент растягивается */
+        }
