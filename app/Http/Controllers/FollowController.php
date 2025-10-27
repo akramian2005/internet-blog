@@ -15,7 +15,6 @@ class FollowController extends Controller
             return back()->with('error', 'Нельзя подписаться на себя.');
         }
 
-        // Проверяем, подписан ли уже
         if ($authUser->isFollowing($user)) {
             $authUser->following()->detach($user->id);
             return back()->with('success', 'Вы отписались от пользователя.');

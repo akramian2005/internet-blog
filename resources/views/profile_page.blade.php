@@ -3,23 +3,16 @@
 @section('title', $user->name . ' — Профиль')
 
 @section('content')
-{{-- Верхний блок: заголовок и кнопка --}}
 <div class="d-flex align-items-center mb-4 position-relative">
-    {{-- Кнопка слева --}}
     <a href="{{ route('index') }}" class="btn btn-secondary mb-3">Назад</a>
-
-    {{-- Заголовок по центру --}}
     <h2 class="m-0 w-100 text-center">Профиль</h2>
 </div>
 
-
-
 <div class="row">
-    {{-- Левая колонка: аватар и информация о пользователе --}}
+    {{-- Левая колонка: аватар и информация --}}
     <div class="col-md-4 mb-4">
         <div class="card shadow-sm text-center">
             <div class="card-body">
-                {{-- Аватар --}}
                 @if($user->avatar)
                     <img src="{{ asset('storage/' . $user->avatar) }}" 
                          alt="{{ $user->name }}" 
@@ -40,43 +33,25 @@
                     <p class="text-muted"><em>Пользователь не заполнил информацию о себе.</em></p>
                 @endif
 
-                {{-- Форма редактирования аватара (для текущего пользователя) --}}
-                @if(auth()->check() && auth()->id() === $user->id)
-                    <form action="{{ route('users.update') }}" method="POST" enctype="multipart/form-data" class="mt-3">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-2">
-                            <label for="avatar" class="form-label">Изменить аватар</label>
-                            <input type="file" name="avatar" id="avatar" class="form-control form-control-sm">
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-sm w-100">Сохранить</button>
-                    </form>
-                
-                @endif
-                
-
+                                {{-- Блок подписки --}}
                 @if(auth()->check() && auth()->id() !== $user->id)
-                    <form action="{{ route('users.follow', $user) }}" method="POST">
+                    <form action="{{ route('users.follow', $user) }}" method="POST" class="mb-3">
                         @csrf
-                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                        <button type="submit" class="btn btn-outline-primary btn-sm w-100">
                             {{ auth()->user()->isFollowing($user) ? 'Отписаться' : 'Подписаться' }}
                         </button>
                     </form>
                 @endif
 
                 <p class="mt-2">
-                <strong>Подписчики:</strong> {{ $user->followers()->count() }} <br>
-                <strong>Подписки:</strong> {{ $user->following()->count() }}
+                    <strong>Подписчики:</strong> {{ $user->followers()->count() }} <br>
+                    <strong>Подписки:</strong> {{ $user->following()->count() }}
                 </p>
-
-
             </div>
         </div>
     </div>
 
-    {{-- Правая колонка: форма редактирования и статьи --}}
+    {{-- Правая колонка: редактирование и статьи --}}
     <div class="col-md-8">
         @if(auth()->check() && auth()->id() === $user->id)
             <div class="card mb-4 shadow-sm">
@@ -87,7 +62,7 @@
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
-                    <form action="{{ route('users.update') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -102,13 +77,18 @@
                             <textarea name="about" id="about" class="form-control" rows="4">{{ old('about', $user->about) }}</textarea>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="avatar" class="form-label">Аватар</label>
+                            <input type="file" name="avatar" id="avatar" class="form-control form-control-sm">
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100">Сохранить изменения</button>
                     </form>
                 </div>
             </div>
         @endif
 
-        {{-- Список статей пользователя --}}
+        {{-- Список статей --}}
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">Статьи пользователя</h5>

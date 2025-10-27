@@ -37,13 +37,13 @@ class UserController extends Controller
         // Обновление аватара
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
-                Storage::delete($user->avatar); // удаляем старый
+                Storage::disk('public')->delete($user->avatar); // удаляем старый аватар
             }
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
         $user->update($data);
 
-        return redirect()->route('users.show', $user->id)->with('success', 'Профиль обновлен');
+        return redirect()->route('users.show', $user->id)->with('success', 'Профиль обновлён');
     }
 }
