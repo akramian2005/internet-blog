@@ -1,7 +1,7 @@
 <div class="row">
     @forelse($articles as $article)
         <div class="col-md-4 mb-4">
-            <div class="card h-100">
+            <div class="card h-100 d-flex flex-column">
                 @if($article->image)
                     <img src="{{ asset('storage/' . $article->image) }}" 
                          class="card-img-top article-img" 
@@ -11,11 +11,13 @@
                         Нет изображения
                     </div>
                 @endif
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ $article->title }}</h5>
                     <p class="card-text">{{ Str::limit($article->content, 100) }}</p>
                     <p class="text-muted">Автор: {{ $article->user->name }}</p>
-                    <a href="{{ route('articles.show', $article->id) }}" class="btn btn-outline-primary">Читать</a>
+                    <div class="mt-auto">
+                        <a href="{{ route('articles.show', $article->id) }}" class="btn btn-outline-primary w-100">Читать</a>
+                    </div>
                 </div>
             </div>
         </div>
