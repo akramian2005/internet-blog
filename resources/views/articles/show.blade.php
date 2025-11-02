@@ -42,9 +42,13 @@
         <!-- Лайки -->
         <div class="mb-3">
             @auth
+                @php
+                    $liked = session('liked_articles', []) && in_array($article->id, session('liked_articles'));
+                @endphp
+
                 <form action="{{ route('articles.like', $article->id) }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-danger">
+                    <button type="submit" class="btn {{ $liked ? 'btn-danger' : 'btn-outline-danger' }}">
                         ❤️ Лайки ({{ $article->likes_count }})
                     </button>
                 </form>
@@ -55,6 +59,7 @@
                 <small class="text-muted ms-2">Войдите, чтобы поставить лайк</small>
             @endauth
         </div>
+
 
     </div>
 </div>

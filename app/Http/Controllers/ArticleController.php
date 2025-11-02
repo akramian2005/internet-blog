@@ -91,18 +91,31 @@ class ArticleController extends Controller
     public function like($id)
     {
         $article = Article::findOrFail($id);
+
         if (!auth()->check()) {
             return redirect()->route('login.show');
         }
 
-        // Один лайк за сессию
+        // Получаем массив лайкнутых статей из сессии
         $likedArticles = session()->get('liked_articles', []);
-        if (!in_array($article->id, $likedArticles)) {
+
+        if (in_array($article->id, $likedArticles)) {
+            // Уже лайкнуто → убираем лайк
+            $article->decrement('likes_count');
+
+            // Удаляем из сессии
+            $likedArticles = array_diff($likedArticles, [$article->id]);
+            session()->put('liked_articles', $likedArticles);
+        } else {
+            // Ещё не лайкнуто → ставим лайк
             $article->increment('likes_count');
+
+            // Добавляем в сессию
             session()->push('liked_articles', $article->id);
         }
 
         return redirect()->back();
-    }
+}
+
 }
 
