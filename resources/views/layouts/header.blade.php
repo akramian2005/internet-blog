@@ -8,28 +8,26 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
 
-        {{-- Категории — видны всем --}}
-        @foreach(\App\Models\Category::all() as $category)
-            <li class="nav-item">
-                <a class="nav-link text-white" 
-                  href="{{ route('categories.show', $category->id) }}">
-                  {{ $category->name }}
-                </a>
-            </li>
-        @endforeach
+        <li class="nav-item dropdown">
+            <a class="nav-link btn btn-success text-white ms-2 
+                {{ auth()->check() && auth()->user()->is_admin ? '' : 'disabled' }}" 
+              href="{{ auth()->check() && auth()->user()->is_admin ? route('categories.index') : '#' }}" 
+              id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Категории
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                @foreach(\App\Models\Category::all() as $category)
+                    <li>
+                        <a class="dropdown-item" href="{{ route('categories.show', $category->id) }}">
+                            {{ $category->name }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </li>
 
 
-        {{-- Кнопка для админа — страницы категорий --}}
-        @auth
-            @if(auth()->user()->is_admin)
-                <li class="nav-item">
-                    <a class="nav-link btn btn-success text-white ms-2" 
-                       href="{{ route('categories.index') }}">
-                        Категории
-                    </a>
-                </li>
-            @endif
-        @endauth
 
         {{-- Авторизованный пользователь --}}
         @auth
@@ -55,12 +53,17 @@
           </li>
         @endguest
 
-        {{-- Статическая страница --}}
         <li class="nav-item">
-          <a class="nav-link" href="{{ url('/about') }}">О нас</a>
+          <a class="nav-link" href="{{ route('about') }}">О нас</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('contacts') }}">Контакты</a>
+        </li>
+
 
       </ul>
     </div>
   </div>
 </nav>
+
+

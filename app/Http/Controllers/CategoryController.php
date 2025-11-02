@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Models\Category;
 
@@ -51,6 +52,9 @@ class CategoryController extends Controller
     public function show($id)
     {
         $category = Category::findOrFail($id);
-        return view('categories.show', compact('category'));
+
+        $articles = $category->articles()->paginate(6);
+
+        return view('categories.show', compact('category', 'articles'));
     }
 }

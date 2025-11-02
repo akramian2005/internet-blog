@@ -7,3 +7,15 @@
         main {
             flex: 1; /* основной контент растягивается */
         }
+
+/* Открываем dropdown при наведении */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0; /* чтобы меню не сдвигалось */
+}
+
+/* Для удобного hover курсора для всех */
+.nav-item.dropdown .disabled {
+    pointer-events: none; /* запрещаем клики для обычных пользователей */
+    opacity: 0.7;
+}

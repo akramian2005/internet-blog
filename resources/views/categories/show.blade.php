@@ -16,7 +16,10 @@
     @endif
 @endauth
 
+
+
 <h3>Статьи этой категории</h3>
 
-@include('articles._card_articles', ['articles' => $category->articles, 'imgHeight' => 300])
+@include('articles._card_articles', ['articles' => $articles, 'imgHeight' => 300])
+
 @endsection
