@@ -14,10 +14,10 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@example.com'], // ищем по email
+            ['email' => 'admin@gmail.com'], // ищем по email
             [
                 'name' => 'Admin',
-                'password' => Hash::make('password123'), // 🔑 лучше поменять потом
+                'password' => Hash::make('12345678'), // 🔑 лучше поменять потом
                 'is_admin' => true, // если у тебя есть колонка для роли
             ]
         );

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,7 +14,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::with('articles')->findOrFail($id);
-        return view('profile_page', compact('user'));
+        return view('users.profile_page', compact('user'));
     }
 
     // Форма редактирования текущего пользователя
@@ -23,7 +24,7 @@ class UserController extends Controller
         return view('users.edit', compact('user'));
     }
 
-    // Сохранение изменений профиля
+    // Сохранение изменений профиля (имя, аватар, about)
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -37,7 +38,7 @@ class UserController extends Controller
         // Обновление аватара
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar); // удаляем старый аватар
+                Storage::disk('public')->delete($user->avatar);
             }
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
@@ -45,5 +46,35 @@ class UserController extends Controller
         $user->update($data);
 
         return redirect()->route('users.show', $user->id)->with('success', 'Профиль обновлён');
+    }
+
+    // Форма изменения email и пароля (Безопасность)
+    public function security()
+    {
+        $user = Auth::user();
+        return view('users.security', compact('user'));
+    }
+
+    // Сохранение изменений email и пароля
+    public function updateSecurity(Request $request)
+    {
+        $user = Auth::user();
+
+        $data = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        // Обновление email
+        $user->email = $data['email'];
+
+        // Обновление пароля, если введён
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
+
+        return redirect()->route('users.show', $user->id)->with('success', 'Настройки безопасности обновлены');
     }
 }

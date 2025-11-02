@@ -48,6 +48,12 @@
                     <strong>Подписки:</strong> {{ $user->following()->count() }}
                 </p>
             </div>
+                {{-- Кнопка Безопасность --}}
+            @if(auth()->check() && auth()->id() === $user->id)
+                <a href="{{ route('profile.security') }}" class="btn btn-warning w-100 mt-3">
+                    Безопасность
+                </a>
+            @endif
         </div>
     </div>
 

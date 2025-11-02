@@ -10,7 +10,7 @@
 
         <li class="nav-item dropdown">
             <a class="nav-link btn btn-success text-white ms-2 
-                {{ auth()->check() && auth()->user()->is_admin ? '' : 'disabled' }}" 
+              {{-- {{ auth()->check() && auth()->user()->is_admin ? '' : 'disabled' }}"  --}}
               href="{{ auth()->check() && auth()->user()->is_admin ? route('categories.index') : '#' }}" 
               id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Категории

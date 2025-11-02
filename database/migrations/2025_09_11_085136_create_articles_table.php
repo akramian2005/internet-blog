@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('title');
             $table->text('content');
             $table->string('image')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

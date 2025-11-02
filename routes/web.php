@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FollowController;
 
 Route::get('/', [MainController::class, 'index'])->name('index');
 
@@ -49,21 +50,14 @@ use App\Http\Controllers\UserController;
 // Просмотр профиля
 Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
 
-// Редактирование профиля (только для авторизованного пользователя)
 Route::middleware('auth')->group(function () {
-    // Форма редактирования профиля
     Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
-
-    // Обновление профиля
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
-
-    // Можно добавить аватар отдельно, если нужно
     Route::post('/profile/avatar', [UserController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::get('/profile/security', [UserController::class, 'security'])->name('profile.security');
+    Route::put('/profile/security', [UserController::class, 'updateSecurity'])->name('profile.updateSecurity');
 });
 
-use App\Http\Controllers\FollowController;
-
-// Подписка/отписка
 Route::middleware('auth')->post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
 
 Route::get('/about', function () {
