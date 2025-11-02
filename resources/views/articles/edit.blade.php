@@ -17,7 +17,7 @@
 
         <div class="mb-3">
             <label class="form-label">Категория</label>
-            <select name="category_id" class="form-control" required>
+            <select name="category_id" class="form-control">
                 <option value="">Выберите категорию</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" 

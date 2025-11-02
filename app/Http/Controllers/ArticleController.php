@@ -59,7 +59,7 @@ class ArticleController extends Controller
         $request->validate([
             'title'       => 'required|max:255',
             'content'     => 'required',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 

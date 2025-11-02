@@ -12,7 +12,8 @@ class CommentController extends Controller
     public function store(Request $request, $articleId)
     {
         $request->validate([
-            'content' => 'required|max:1000'
+            'content' => 'required|max:1000',
+            'parent_id' => 'nullable|exists:comments,id'
         ]);
 
         $article = Article::findOrFail($articleId);
@@ -20,7 +21,8 @@ class CommentController extends Controller
         Comment::create([
             'content' => $request->content,
             'user_id' => Auth::id(),
-            'article_id' => $article->id
+            'article_id' => $article->id,
+            'parent_id' => $request->parent_id,
         ]);
 
         return redirect()->back()->with('success', 'Комментарий добавлен!');

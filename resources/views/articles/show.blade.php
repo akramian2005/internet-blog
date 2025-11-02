@@ -71,7 +71,7 @@
     <div class="card-body">
         <h4>Комментарии ({{ $article->comments->count() }})</h4>
 
-        <!-- Форма добавления комментария -->
+        <!-- Форма добавления корневого комментария -->
         @auth
         <form action="{{ route('comments.store', $article->id) }}" method="POST">
             @csrf
@@ -88,52 +88,84 @@
 
         <hr>
 
-        <!-- Вывод комментариев -->
-        @foreach($article->comments as $comment)
-            <div class="mb-3 border-bottom pb-2">
-                <strong>{{ $comment->user->name }}:</strong>
+        <!-- Рекурсивный вывод комментариев -->
+        @php
+        function renderComments($comments, $level = 0) {
+            foreach ($comments as $comment) {
+                $margin = $level * 30;
+                echo '<div class="mb-3" style="margin-left: '.$margin.'px; border-left: 2px solid #ccc; padding-left:10px;">';
+                echo '<strong>'.$comment->user->name.':</strong>';
+                
+                // Текст комментария
+                echo '<div id="comment-text-'.$comment->id.'" class="mt-1">';
+                echo '<p>'.nl2br(e($comment->content)).'</p>';
+                echo '</div>';
 
-                <!-- Текст комментария -->
-                <div id="comment-text-{{ $comment->id }}">
-                    <p>{!! nl2br(e($comment->content)) !!}</p>
-                </div>
+                // Форма редактирования (только автор)
+                if(auth()->check() && auth()->id() === $comment->user_id) {
+                    echo '<form action="'.route('comments.update', $comment->id).'" method="POST" class="d-none" id="edit-form-'.$comment->id.'">';
+                    echo csrf_field();
+                    echo method_field('PUT');
+                    echo '<textarea name="content" class="form-control mb-2" rows="2" required>'.$comment->content.'</textarea>';
+                    echo '<button type="submit" class="btn btn-sm btn-success">💾 Сохранить</button>';
+                    echo '<button type="button" class="btn btn-sm btn-secondary" onclick="cancelEdit('.$comment->id.')">Отмена</button>';
+                    echo '</form>';
+                }
 
-                <!-- Форма редактирования (скрыта по умолчанию) -->
-                <form action="{{ route('comments.update', $comment->id) }}" method="POST"
-                      class="d-none" id="edit-form-{{ $comment->id }}">
-                    @csrf
-                    @method('PUT')
-                    <textarea name="content" class="form-control mb-2" rows="3" required>{{ $comment->content }}</textarea>
-                    <button type="submit" class="btn btn-sm btn-success">💾 Сохранить</button>
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="cancelEdit({{ $comment->id }})">Отмена</button>
-                </form>
+                echo '<small class="text-muted">'.$comment->created_at->format('d.m.Y H:i').'</small>';
 
-                <small class="text-muted">{{ $comment->created_at->format('d.m.Y H:i') }}</small>
+                // Кнопки "Ответить" и "Показать ответы"
+                if(auth()->check()) {
+                    echo '<div class="mt-2 d-flex gap-2">';
+                    echo '<button type="button" class="btn btn-sm btn-secondary" id="reply-btn-'.$comment->id.'" onclick="showReplyForm('.$comment->id.')">Ответить</button>';
+                    if($comment->replies && count($comment->replies) > 0) {
+                        echo '<button type="button" class="btn btn-sm btn-outline-info" id="toggle-replies-btn-'.$comment->id.'" onclick="toggleReplies('.$comment->id.')">Показать ответы ('.count($comment->replies).')</button>';
+                    }
+                    echo '</div>';
+                }
 
-                @auth
-                    @if(auth()->id() === $comment->user_id)
-                        <div class="mt-2">
-                            <button type="button" class="btn btn-sm btn-primary" onclick="editComment({{ $comment->id }})">
-                                ✏️ Редактировать
-                            </button>
+                // Форма ответа
+                if(auth()->check()) {
+                    echo '<form action="'.route('comments.store', $comment->article_id).'" method="POST" class="mt-2 d-none" id="reply-form-'.$comment->id.'">';
+                    echo csrf_field();
+                    echo '<input type="hidden" name="parent_id" value="'.$comment->id.'">';
+                    echo '<textarea name="content" class="form-control mb-1" rows="2" placeholder="Ваш ответ..." required></textarea>';
+                    echo '<button type="submit" class="btn btn-sm btn-primary">Отправить</button>';
+                    echo '</form>';
+                }
 
-                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Удалить комментарий?')">
-                                    🗑️ Удалить
-                                </button>
-                            </form>
-                        </div>
-                    @endif
-                @endauth
-            </div>
-        @endforeach
+                // Кнопки редактирования и удаления
+                if(auth()->check() && auth()->id() === $comment->user_id) {
+                    echo '<div class="mt-2">';
+                    echo '<button type="button" class="btn btn-sm btn-primary" onclick="editComment('.$comment->id.')">✏️ Редактировать</button>';
+                    echo '<form action="'.route('comments.destroy', $comment->id).'" method="POST" class="d-inline">';
+                    echo csrf_field();
+                    echo method_field('DELETE');
+                    echo '<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Удалить комментарий?\')">🗑️ Удалить</button>';
+                    echo '</form>';
+                    echo '</div>';
+                }
+
+                // Рекурсивные ответы (по умолчанию скрыты)
+                if($comment->replies && count($comment->replies) > 0) {
+                    echo '<div id="replies-'.$comment->id.'" class="mt-3 d-none">';
+                    renderComments($comment->replies, $level + 1);
+                    echo '</div>';
+                }
+
+                echo '</div>'; // конец комментария
+            }
+        }
+        @endphp
+
+        @php
+            renderComments($article->comments()->whereNull('parent_id')->get());
+        @endphp
+
     </div>
 </div>
 
-<!-- Скрипт для показа/скрытия формы редактирования -->
+<!-- Скрипт -->
 <script>
 function editComment(id) {
     document.getElementById('comment-text-' + id).classList.add('d-none');
@@ -144,7 +176,29 @@ function cancelEdit(id) {
     document.getElementById('comment-text-' + id).classList.remove('d-none');
     document.getElementById('edit-form-' + id).classList.add('d-none');
 }
+
+function showReplyForm(id) {
+    const btn = document.getElementById('reply-btn-' + id);
+    const form = document.getElementById('reply-form-' + id);
+    btn.classList.add('d-none');
+    form.classList.remove('d-none');
+}
+
+function toggleReplies(id) {
+    const replies = document.getElementById('replies-' + id);
+    const btn = document.getElementById('toggle-replies-btn-' + id);
+
+    if (replies.classList.contains('d-none')) {
+        replies.classList.remove('d-none');
+        btn.textContent = 'Скрыть ответы';
+    } else {
+        replies.classList.add('d-none');
+        btn.textContent = 'Показать ответы';
+    }
+}
 </script>
+
+
 @endsection
 
 
