@@ -48,7 +48,6 @@ class User extends Authenticatable
         ];
     }
     
-        // Связь с таблицей статей
     public function articles()
     {
         return $this->hasMany(Article::class);
@@ -67,8 +66,7 @@ class User extends Authenticatable
     public function isFollowing($user)
     {
         return $this->following()->where('following_id', $user->id)->exists();
-}
-
+    }
 
 }
 

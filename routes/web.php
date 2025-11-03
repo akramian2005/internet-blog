@@ -65,4 +65,7 @@ Route::get('/contacts', function () {
     return view('contacts');
 })->name('contacts');
 
+use App\Http\Controllers\SearchController;
+
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 

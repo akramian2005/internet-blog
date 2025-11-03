@@ -7,6 +7,15 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
+        <form action="{{ route('search') }}" method="GET" class="d-flex me-3">
+          <input class="form-control me-2" 
+                type="search" 
+                name="q" 
+                placeholder="Поиск..." 
+                value="{{ request('q') }}" 
+                aria-label="Поиск">
+          <button class="btn btn-outline-light" type="submit">🔍</button>
+      </form>
 
         <li class="nav-item dropdown">
             <a class="nav-link btn btn-success text-white ms-2 
