@@ -23,4 +23,15 @@ class FollowController extends Controller
             return back()->with('success', 'Вы подписались на пользователя.');
         }
     }
+
+public function connections($id)
+{
+    $user = User::findOrFail($id);
+    $followers = $user->followers()->paginate(10);
+    $following = $user->following()->paginate(10);
+
+    return view('users.connections', compact('user', 'followers', 'following'));
+}
+
+
 }

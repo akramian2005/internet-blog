@@ -21,5 +21,14 @@ class AdminUserSeeder extends Seeder
                 'is_admin' => true, // если у тебя есть колонка для роли
             ]
         );
+
+        User::updateOrCreate(
+            ['email' => 'akram@gmail.com'], // ищем по email
+            [
+                'name' => 'akram',
+                'password' => Hash::make('12345678'), // 🔑 лучше поменять потом
+                'is_admin' => false, // если у тебя есть колонка для роли
+            ]
+        );
     }
 }

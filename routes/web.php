@@ -9,6 +9,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', [MainController::class, 'index'])->name('index');
 
@@ -45,8 +46,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
 
-use App\Http\Controllers\UserController;
-
 // Просмотр профиля
 Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
 
@@ -59,6 +58,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
+Route::get('/users/{id}/connections', [UserController::class, 'connections'])->name('users.connections');
 
 Route::get('/about', function () {
     return view('about');

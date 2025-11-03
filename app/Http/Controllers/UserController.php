@@ -77,4 +77,13 @@ class UserController extends Controller
 
         return redirect()->route('users.show', $user->id)->with('success', 'Настройки безопасности обновлены');
     }
+
+    public function connections($id)
+{
+    $user = User::findOrFail($id);
+    $followers = $user->followers()->paginate(10);
+    $following = $user->following()->paginate(10);
+
+    return view('users.connections', compact('user', 'followers', 'following'));
+}
 }

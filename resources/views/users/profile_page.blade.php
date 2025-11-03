@@ -33,7 +33,7 @@
                     <p class="text-muted"><em>Пользователь не заполнил информацию о себе.</em></p>
                 @endif
 
-                                {{-- Блок подписки --}}
+                {{-- Блок подписки --}}
                 @if(auth()->check() && auth()->id() !== $user->id)
                     <form action="{{ route('users.follow', $user) }}" method="POST" class="mb-3">
                         @csrf
@@ -43,10 +43,12 @@
                     </form>
                 @endif
 
-                <p class="mt-2">
-                    <strong>Подписчики:</strong> {{ $user->followers()->count() }} <br>
-                    <strong>Подписки:</strong> {{ $user->following()->count() }}
-                </p>
+<p class="mt-2">
+    <a href="{{ route('users.connections', $user->id) }}" class="btn btn-outline-primary w-100">
+        Подписчики: {{ $user->followers()->count() }} / Подписки: {{ $user->following()->count() }}
+    </a>
+</p>
+
             </div>
                 {{-- Кнопка Безопасность --}}
             @if(auth()->check() && auth()->id() === $user->id)
