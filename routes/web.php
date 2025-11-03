@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SearchController;
 
 Route::get('/', [MainController::class, 'index'])->name('index');
 
@@ -64,8 +65,6 @@ Route::get('/about', function () {
 Route::get('/contacts', function () {
     return view('contacts');
 })->name('contacts');
-
-use App\Http\Controllers\SearchController;
 
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 

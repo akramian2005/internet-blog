@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->string('image')->nullable();
             $table->foreignId('category_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
+            $table->unsignedBigInteger('views')->default(0); // количество просмотров
+            $table->timestamp('published_at')->nullable(); 
         });
     }
 

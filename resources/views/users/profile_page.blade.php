@@ -43,11 +43,11 @@
                     </form>
                 @endif
 
-<p class="mt-2">
-    <a href="{{ route('users.connections', $user->id) }}" class="btn btn-outline-primary w-100">
-        Подписчики: {{ $user->followers()->count() }} / Подписки: {{ $user->following()->count() }}
-    </a>
-</p>
+                <p class="mt-2">
+                    <a href="{{ route('users.connections', $user->id) }}" class="btn btn-outline-primary w-100">
+                        Подписчики: {{ $user->followers()->count() }} / Подписки: {{ $user->following()->count() }}
+                    </a>
+                </p>
 
             </div>
                 {{-- Кнопка Безопасность --}}

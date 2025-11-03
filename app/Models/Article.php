@@ -9,7 +9,11 @@ class Article extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'content', 'image', 'user_id', 'category_id'];
+    protected $fillable = ['title', 'content', 'image', 'user_id', 'category_id', 'published_at'];
+
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
 
     public function user() {
         return $this->belongsTo(User::class);
@@ -24,3 +28,4 @@ class Article extends Model
         return $this->hasMany(Comment::class);
     }
 }
+

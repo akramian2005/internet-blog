@@ -37,6 +37,11 @@
 
             Категория: <strong>{{ optional($article->category)->name }}</strong>
         </p>
+        <p>
+            Опубликовано: {{ $article->published_at ? $article->published_at->format('d.m.Y H:i') : '—' }} <br>
+            Просмотры: {{ $article->views }}
+        </p>
+
         <p>{{ $article->content }}</p>
 
         <!-- Лайки -->

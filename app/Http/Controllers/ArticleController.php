@@ -13,8 +13,18 @@ class ArticleController extends Controller
     public function show($id)
     {
         $article = Article::with(['user', 'category', 'comments.user'])->findOrFail($id);
+
+        // Увеличиваем просмотры один раз за сессию
+        $viewed = session()->get('viewed_articles', []);
+        if (!in_array($article->id, $viewed)) {
+            $article->increment('views');
+            $viewed[] = $article->id;
+            session()->put('viewed_articles', $viewed);
+        }
+
         return view('articles.show', compact('article'));
     }
+
 
     public function create()
     {
@@ -33,6 +43,7 @@ class ArticleController extends Controller
 
         $data = $request->only(['title', 'content', 'category_id']);
         $data['user_id'] = Auth::id();
+        $data['published_at'] = now(); 
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('articles', 'public');
@@ -96,21 +107,16 @@ class ArticleController extends Controller
             return redirect()->route('login.show');
         }
 
-        // Получаем массив лайкнутых статей из сессии
         $likedArticles = session()->get('liked_articles', []);
 
         if (in_array($article->id, $likedArticles)) {
             // Уже лайкнуто → убираем лайк
             $article->decrement('likes_count');
-
-            // Удаляем из сессии
             $likedArticles = array_diff($likedArticles, [$article->id]);
             session()->put('liked_articles', $likedArticles);
         } else {
             // Ещё не лайкнуто → ставим лайк
             $article->increment('likes_count');
-
-            // Добавляем в сессию
             session()->push('liked_articles', $article->id);
         }
 
