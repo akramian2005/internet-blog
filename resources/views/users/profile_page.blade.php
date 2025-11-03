@@ -45,12 +45,11 @@
 
 
                 @endif
-                    <p class="mt-2 w-100">
-                        <a href="{{ route('users.connections', $user->id) }}" class="btn btn-outline-primary w-100">
-                            Подписчики: {{ $user->followers()->count() }} / Подписки: {{ $user->following()->count() }}
-                        </a>
-                    </p>
-                {{-- Если кнопки подписки нет, подписчики/подписки не показываем --}}
+                <p class="mt-2 w-100">
+                    <a href="{{ route('users.connections', $user->id) }}" class="btn btn-outline-primary w-100">
+                        Подписчики: {{ $user->followers()->count() }} / Подписки: {{ $user->following()->count() }}
+                    </a>
+                </p>
                 
                 {{-- Кнопка Безопасность --}}
                 @if(auth()->check() && auth()->id() === $user->id)
