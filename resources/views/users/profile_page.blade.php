@@ -11,53 +11,58 @@
 <div class="row">
     {{-- Левая колонка: аватар и информация --}}
     <div class="col-md-4 mb-4">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
+        <div class="card shadow-sm text-center p-3">
+            <div class="card-body d-flex flex-column align-items-center">
+
                 @if($user->avatar)
                     <img src="{{ asset('storage/' . $user->avatar) }}" 
-                         alt="{{ $user->name }}" 
-                         class="rounded-circle mb-3" 
-                         style="width: 150px; height: 150px; object-fit: cover;">
+                        alt="{{ $user->name }}" 
+                        class="rounded-circle mb-3" 
+                        style="width: 150px; height: 150px; object-fit: cover;">
                 @else
                     <img src="https://via.placeholder.com/150" 
-                         alt="Аватар отсутствует" 
-                         class="rounded-circle mb-3" 
-                         style="width: 150px; height: 150px; object-fit: cover;">
+                        alt="Аватар отсутствует" 
+                        class="rounded-circle mb-3" 
+                        style="width: 150px; height: 150px; object-fit: cover;">
                 @endif
 
-                <h4>{{ $user->name }}</h4>
+                <h4 class="mb-3">{{ $user->name }}</h4>
 
                 @if($user->about)
-                    <p class="mt-2">{{ $user->about }}</p>
+                    <p class="mb-3">{{ $user->about }}</p>
                 @elseif(!auth()->check() || auth()->id() !== $user->id)
-                    <p class="text-muted"><em>Пользователь не заполнил информацию о себе.</em></p>
+                    <p class="text-muted mb-3"><em>Пользователь не заполнил информацию о себе.</em></p>
                 @endif
 
                 {{-- Блок подписки --}}
                 @if(auth()->check() && auth()->id() !== $user->id)
-                    <form action="{{ route('users.follow', $user) }}" method="POST" class="mb-3">
+                    <form action="{{ route('users.follow', $user) }}" method="POST" class="mb-3 w-100">
                         @csrf
                         <button type="submit" class="btn btn-outline-primary btn-sm w-100">
                             {{ auth()->user()->isFollowing($user) ? 'Отписаться' : 'Подписаться' }}
                         </button>
                     </form>
+
+
+                @endif
+                    <p class="mt-2 w-100">
+                        <a href="{{ route('users.connections', $user->id) }}" class="btn btn-outline-primary w-100">
+                            Подписчики: {{ $user->followers()->count() }} / Подписки: {{ $user->following()->count() }}
+                        </a>
+                    </p>
+                {{-- Если кнопки подписки нет, подписчики/подписки не показываем --}}
+                
+                {{-- Кнопка Безопасность --}}
+                @if(auth()->check() && auth()->id() === $user->id)
+                    <a href="{{ route('profile.security') }}" class="btn btn-warning w-100 mt-4">
+                        Безопасность
+                    </a>
                 @endif
 
-                <p class="mt-2">
-                    <a href="{{ route('users.connections', $user->id) }}" class="btn btn-outline-primary w-100">
-                        Подписчики: {{ $user->followers()->count() }} / Подписки: {{ $user->following()->count() }}
-                    </a>
-                </p>
-
             </div>
-                {{-- Кнопка Безопасность --}}
-            @if(auth()->check() && auth()->id() === $user->id)
-                <a href="{{ route('profile.security') }}" class="btn btn-warning w-100 mt-3">
-                    Безопасность
-                </a>
-            @endif
         </div>
     </div>
+
 
     {{-- Правая колонка: редактирование и статьи --}}
     <div class="col-md-8">
