@@ -43,8 +43,8 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'category_id' => Category::inRandomOrder()->first()->id,
                 'title' => "Статья $i",
-                'content' => Str::random(200), // случайный текст 200 символов
-                'image' => "articles/image{$i}.png",
+                'content' => strtolower(Str::random(200)), // случайный текст 200 символов
+                'image' => "articles/image{$i}.jpg",
             ]);
         }
     }
