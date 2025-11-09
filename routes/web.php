@@ -68,3 +68,9 @@ Route::get('/contacts', function () {
 
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 
+use App\Http\Controllers\SupportMessageController;
+
+Route::post('/contact', [SupportMessageController::class, 'store'])->name('support.store');
+
+
+

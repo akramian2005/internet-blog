@@ -8,7 +8,7 @@
     <p>Адрес: ул. Фрунзе, 123, Бишкек, Кыргызстан</p>
 
     <h3>Форма обратной связи</h3>
-    <form action="" method="POST">
+    <form action="{{ route('support.store') }}" method="POST">
         @csrf
         <div class="mb-3">
             <label for="name" class="form-label">Ваше имя</label>
@@ -22,8 +22,14 @@
             <label for="message" class="form-label">Сообщение</label>
             <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" disabled>Отправить</button>
-        <p class="text-muted mt-2">Форма отображается для примера, отправка недоступна.</p>
+        <button type="submit" class="btn btn-primary">Отправить</button>
     </form>
+
+    @if(session('success'))
+        <div class="alert alert-success mt-3">
+            {{ session('success') }}
+        </div>
+    @endif
+
 </div>
 @endsection
