@@ -68,6 +68,10 @@ class User extends Authenticatable
         return $this->following()->where('following_id', $user->id)->exists();
     }
 
+    public function savedArticles()
+    {
+        return $this->belongsToMany(Article::class, 'article_user')->withTimestamps();
+    }
 }
 
 

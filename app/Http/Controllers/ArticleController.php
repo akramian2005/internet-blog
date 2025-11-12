@@ -121,7 +121,24 @@ class ArticleController extends Controller
         }
 
         return redirect()->back();
-}
+    }
+
+    public function toggleSave($id)
+    {
+        $user = auth()->user();
+        $article = Article::findOrFail($id);
+
+        if ($user->savedArticles()->where('article_id', $id)->exists()) {
+            $user->savedArticles()->detach($id);
+            $message = 'Статья удалена из сохранённых';
+        } else {
+            $user->savedArticles()->attach($id);
+            $message = 'Статья добавлена в сохранённые';
+        }
+
+        return back()->with('status', $message);
+    }
+
 
 }
 

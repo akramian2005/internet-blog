@@ -11,6 +11,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SupportMessageController;
 
 Route::get('/', [MainController::class, 'index'])->name('index');
 
@@ -58,6 +59,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
 Route::get('/users/{id}/connections', [UserController::class, 'connections'])->name('users.connections');
 
+Route::middleware('auth')->post('/articles/{article}/save', [ArticleController::class, 'toggleSave'])->name('articles.save');
+Route::middleware('auth')->get('/profile/saved', [UserController::class, 'saved'])->name('users.saved');
+
+Route::get('/search', [SearchController::class, 'index'])->name('search');
+Route::post('/contact', [SupportMessageController::class, 'store'])->name('support.store');
+
 Route::get('/about', function () {
     return view('about');
 })->name('about');
@@ -66,11 +73,7 @@ Route::get('/contacts', function () {
     return view('contacts');
 })->name('contacts');
 
-Route::get('/search', [SearchController::class, 'index'])->name('search');
 
-use App\Http\Controllers\SupportMessageController;
-
-Route::post('/contact', [SupportMessageController::class, 'store'])->name('support.store');
 
 
 

@@ -21,7 +21,7 @@ class UserController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('users.edit', compact('user'));
+        return view('users.profile_page', compact('user'));
     }
 
     // Сохранение изменений профиля (имя, аватар, about)
@@ -79,11 +79,20 @@ class UserController extends Controller
     }
 
     public function connections($id)
-{
-    $user = User::findOrFail($id);
-    $followers = $user->followers()->paginate(10);
-    $following = $user->following()->paginate(10);
+    {
+        $user = User::findOrFail($id);
+        $followers = $user->followers()->paginate(10);
+        $following = $user->following()->paginate(10);
 
-    return view('users.connections', compact('user', 'followers', 'following'));
-}
+        return view('users.connections', compact('user', 'followers', 'following'));
+    }
+
+    public function saved()
+    {
+        $user = auth()->user();
+        $articles = $user->savedArticles()->with('category', 'user')->latest()->get();
+
+        return view('users.saved', compact('user', 'articles'));
+    }
+
 }

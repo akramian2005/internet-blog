@@ -5,6 +5,7 @@
 @section('content')
 <div class="container mt-4">
     <h2 class="mb-4 text-center">Подписки и подписчики {{ $user->name }}</h2>
+    <a href="{{ route('users.show', $user->id) }}" class="btn btn-secondary mb-3">Назад</a>
 
     {{-- Навигация --}}
     <ul class="nav nav-tabs mb-3" id="connectionsTabs" role="tablist">

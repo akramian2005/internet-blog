@@ -28,5 +28,10 @@ class Article extends Model
     public function comments() {
         return $this->hasMany(Comment::class);
     }
+
+    public function savedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'article_user')->withTimestamps();
+    }
 }
 

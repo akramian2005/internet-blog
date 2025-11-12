@@ -5,6 +5,7 @@
 @section('content')
 <div class="container mt-4">
     <h2>Настройки безопасности</h2>
+    <a href="{{ route('users.show', $user->id) }}" class="btn btn-secondary mb-3">Назад</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

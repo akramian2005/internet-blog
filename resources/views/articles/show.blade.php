@@ -64,6 +64,26 @@
                 <small class="text-muted ms-2">Войдите, чтобы поставить лайк</small>
             @endauth
         </div>
+        <!-- Сохранить в избранное -->
+        <div class="mb-3">
+            @auth
+                @php
+                    $isSaved = auth()->user()->savedArticles->contains($article->id);
+                @endphp
+
+                <form action="{{ route('articles.save', $article->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn {{ $isSaved ? 'btn-warning' : 'btn-outline-warning' }}">
+                        ⭐ {{ $isSaved ? 'В сохранённых' : 'Сохранить' }}
+                    </button>
+                </form>
+            @else
+                <button type="button" class="btn btn-outline-warning" disabled>
+                    ⭐ Сохранить
+                </button>
+                <small class="text-muted ms-2">Войдите, чтобы сохранять статьи</small>
+            @endauth
+        </div>
 
 
     </div>

@@ -58,6 +58,14 @@
                     </a>
                 @endif
 
+                {{-- Кнопка Сохранённые статьи --}}
+                @if(auth()->check() && auth()->id() === $user->id)
+                    <a href="{{ route('users.saved') }}" class="btn btn-outline-warning w-100 mt-3">
+                        ⭐ Мои сохранённые статьи
+                    </a>
+                @endif
+
+
             </div>
         </div>
     </div>
