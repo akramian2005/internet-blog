@@ -12,6 +12,7 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SupportMessageController;
+use App\Http\Controllers\ChatController;
 
 Route::get('/', [MainController::class, 'index'])->name('index');
 
@@ -73,7 +74,17 @@ Route::get('/contacts', function () {
     return view('contacts');
 })->name('contacts');
 
+Route::middleware(['auth'])->group(function () {
+    // Пользовательский чат
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
 
+    // Админские маршруты
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin/chats', [ChatController::class, 'adminIndex'])->name('admin.chats');
+        Route::get('/admin/chats/{userId}', [ChatController::class, 'adminChat'])->name('admin.chat');
+    });
+});
 
 
 
