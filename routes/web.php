@@ -74,17 +74,22 @@ Route::get('/contacts', function () {
     return view('contacts');
 })->name('contacts');
 
-Route::middleware(['auth'])->group(function () {
-    // Пользовательский чат
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+Route::middleware(['auth'])->group(function() {
+    // Пользователь
+    Route::get('/support', [ChatController::class, 'userTickets'])->name('chat.userTickets');
+    Route::post('/support/create', [ChatController::class, 'createTicket'])->name('chat.createTicket');
+    Route::get('/support/{ticket}', [ChatController::class, 'chat'])->name('chat.chat');
+    Route::post('/support/{ticket}/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::post('/support/{ticket}/close', [ChatController::class, 'closeTicket'])->name('ticket.close');
 
-    // Админские маршруты
-    Route::middleware('admin')->group(function () {
-        Route::get('/admin/chats', [ChatController::class, 'adminIndex'])->name('admin.chats');
-        Route::get('/admin/chats/{userId}', [ChatController::class, 'adminChat'])->name('admin.chat');
-    });
+    // Админ
+    Route::get('/admin/support', [ChatController::class, 'adminIndex'])->name('admin.tickets');
+    Route::get('/admin/support/{ticket}', [ChatController::class, 'adminChat'])->name('admin.ticket.chat');
+    Route::post('/admin/support/{ticket}/close', [ChatController::class, 'adminCloseTicket'])->name('admin.ticket.close');
 });
+
+
+
 
 
 

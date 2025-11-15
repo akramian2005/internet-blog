@@ -7,7 +7,7 @@
     <p>Телефон: <a href="tel:+1234567890">+996 (234) 567-890</a></p>
     <p>Адрес: ул. Фрунзе, 123, Бишкек, Кыргызстан</p>
 
-    <h3>Форма обратной связи</h3>
+    {{-- <h3>Форма обратной связи</h3>
     <form action="{{ route('support.store') }}" method="POST">
         @csrf
         <div class="mb-3">
@@ -23,7 +23,11 @@
             <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Отправить</button>
-    </form>
+    </form> --}}
+  
+    <a href="{{ route('chat.userTickets') }}" class="btn btn-warning btn-sm text-white">
+        Обратится в поддержку
+    </a>
 
     @if(session('success'))
         <div class="alert alert-success mt-3">

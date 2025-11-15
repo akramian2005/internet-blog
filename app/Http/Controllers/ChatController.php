@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ticket;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,66 +10,104 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    // Пользователь видит свой чат с админом
-    public function index()
+    // --- Пользователь: список своих тикетов ---
+    public function userTickets()
     {
-        $messages = Message::where(function ($q) {
-                $q->where('user_id', Auth::id())
-                  ->orWhere('receiver_id', Auth::id());
-            })
-            ->orderBy('created_at')
-            ->get();
+        $tickets = Ticket::where('user_id', Auth::id())
+                         ->orderBy('status', 'asc')
+                         ->orderBy('created_at', 'desc')
+                         ->get();
 
-        return view('chat.index', compact('messages'));
+        return view('chat.user_tickets', compact('tickets'));
     }
 
-    // Отправка сообщения (и пользователем, и админом)
-    public function send(Request $request)
+    // --- Создание новой заявки ---
+    public function createTicket(Request $request)
     {
-        $request->validate(['message' => 'required|string']);
-
-        $receiverId = Auth::user()->is_admin
-            ? $request->receiver_id // если админ — он указывает кому
-            : User::where('is_admin', true)->first()->id; // обычный пользователь → админу
-
-        Message::create([
+        $ticket = Ticket::create([
             'user_id' => Auth::id(),
-            'receiver_id' => $receiverId,
-            'message' => $request->message,
+            'subject' => 'Техническая поддержка',
+            'status' => 'open',
         ]);
+
+        return redirect()->route('chat.chat', $ticket->id);
+    }
+
+    // --- Просмотр конкретного чата пользователя ---
+    public function chat($ticketId)
+    {
+        $ticket = Ticket::where('id', $ticketId)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        $messages = $ticket->messages()->orderBy('created_at')->get();
+
+        return view('chat.index', compact('ticket', 'messages'));
+    }
+
+    // --- Отправка сообщения ---
+public function send(Request $request, $ticketId)
+{
+    $request->validate(['message' => 'required|string']);
+
+    $ticket = Ticket::findOrFail($ticketId);
+
+    $receiverId = Auth::user()->is_admin 
+                  ? $ticket->user_id 
+                  : User::where('is_admin', true)->first()->id;
+
+    Message::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => Auth::id(),
+        'receiver_id' => $receiverId,
+        'message' => $request->message,
+    ]);
+
+    return back();
+}
+
+
+    // --- Закрытие тикета пользователем ---
+    public function closeTicket($ticketId)
+    {
+        $ticket = Ticket::where('id', $ticketId)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        $ticket->update(['status' => 'closed']);
 
         return back();
     }
 
-    // Страница списка всех чатов (для админа)
+    // --- Закрытие тикета админом ---
+    public function adminCloseTicket($ticketId)
+    {
+        if (!Auth::user()->is_admin) abort(403);
+
+        Ticket::where('id', $ticketId)->update(['status' => 'closed']);
+        return back();
+    }
+
+    // --- Админ: список всех тикетов ---
     public function adminIndex()
     {
         if (!Auth::user()->is_admin) abort(403);
 
-        $users = User::whereHas('sentMessages', function ($q) {
-            $q->where('receiver_id', Auth::id());
-        })->get();
+        $tickets = Ticket::orderBy('status', 'asc')
+                         ->orderBy('created_at', 'desc')
+                         ->get();
 
-        return view('chat.admin_index', compact('users'));
+        return view('chat.admin_index', compact('tickets'));
     }
 
-    // Чат с конкретным пользователем
-    public function adminChat($userId)
+    // --- Админ: чат с конкретной заявкой ---
+    public function adminChat($ticketId)
     {
         if (!Auth::user()->is_admin) abort(403);
 
-        $messages = Message::where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)->where('receiver_id', Auth::id());
-            })
-            ->orWhere(function ($q) use ($userId) {
-                $q->where('user_id', Auth::id())->where('receiver_id', $userId);
-            })
-            ->orderBy('created_at')
-            ->get();
+        $ticket = Ticket::findOrFail($ticketId);
+        $messages = $ticket->messages()->orderBy('created_at')->get();
 
-        $user = User::findOrFail($userId);
-
-        return view('chat.admin_chat', compact('messages', 'user'));
+        return view('chat.admin_chat', compact('messages', 'ticket'));
     }
 }
-

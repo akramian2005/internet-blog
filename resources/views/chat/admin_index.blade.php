@@ -2,16 +2,26 @@
 
 @section('content')
 <div class="container">
-    <h2>Чаты с пользователями</h2>
+    <h2>Все заявки</h2>
 
-    <ul class="list-group">
-        @foreach($users as $user)
-            <li class="list-group-item">
-                <a href="{{ route('admin.chat', $user->id) }}">
-                    {{ $user->name }} ({{ $user->email }})
-                </a>
-            </li>
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Пользователь</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+
+        @foreach($tickets as $t)
+        <tr>
+            <td>{{ $t->id }}</td>
+            <td>{{ $t->user->name }}</td>
+            <td>{{ $t->status }}</td>
+            <td>
+                <a href="{{ route('admin.ticket.chat', $t->id) }}" class="btn btn-primary">Открыть</a>
+            </td>
+        </tr>
         @endforeach
-    </ul>
+    </table>
 </div>
 @endsection

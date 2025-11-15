@@ -67,9 +67,25 @@
         <li class="nav-item ms-2">
           <a class="nav-link" href="{{ route('about') }}">О нас</a>
         </li>
-        <li class="nav-item ms-2">
-          <a class="nav-link" href="{{ route('contacts') }}">Контакты</a>
-        </li>
+        @if(!auth()->check() || !auth()->user()->is_admin)
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{{ route('contacts') }}">Контакты</a>
+          </li>
+         @endif  
+        {{-- Поддержка --}}
+        @auth
+            <li class="nav-item ms-2">
+                @if(auth()->user()->is_admin)
+                    <a href="{{ route('admin.tickets') }}" class="btn btn-warning btn-sm text-white">
+                        Заявки поддержки
+                    </a>
+                {{-- @else
+                    <a href="{{ route('chat.userTickets') }}" class="btn btn-warning btn-sm text-white">
+                        Мои заявки
+                    </a> --}}
+                @endif  
+            </li>
+        @endauth
 
       </ul>
     </div>
